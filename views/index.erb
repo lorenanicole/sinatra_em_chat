@@ -1,0 +1,42 @@
+<div class="container">
+
+  <h1>Welcome to Your Fancy Chat App!</h1>
+
+  <div id="welcome">
+
+    <h3> Please choose a username ... </h3>
+    <form id="username">
+      <input id="name" type="text" placeholder="mystical ponies">
+      <input id="set-un" type="submit" value="Nameify me!">
+    </form>
+  </div>
+
+  <div id="content">
+
+  <div id="current-chatters">
+    <h2>Current Chatters</h2>
+    <% current = $clients.select { |client| client.sock.state == :connected } %>
+    <% current.each do |client| %>
+      <p id="<%= client.username %>"><%=client.username%></p>
+    <% end %>
+  </div>
+
+  <div id="connection">
+    <h2> Connection Statuses </h2>
+  </div>
+
+  <div id="chat-window">
+    <h2> Chat Log </h2>
+    <div id="chat-log">
+    </div>
+    <div id="chat-app">
+      <form id="chat">
+        <input id="message" type="text" placeholder="talk it to me baby">
+        <input id="sending" type="submit" value="Send">
+      </form>
+    </div>
+  </div>
+
+  </div>
+
+</div>

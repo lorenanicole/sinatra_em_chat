@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!--
+    normalize.css removes cross-browser differences in defaults, e.g.,
+    differences in how form elements appear between Firefox and IE
+    See: http://necolas.github.com/normalize.css/
+  -->
+
+  <link rel="stylesheet" href="/css/normalize.css">
+
+  <link href='http://fonts.googleapis.com/css?family=Aclonica' rel='stylesheet' type='text/css'>
+  <!--
+    application.css is where you put your styles
+  -->
+  <link rel="stylesheet" href="/css/application.css">
+
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>
+
+  $(document).ready(function() {
+
+    var host = "ws://<%=request.host%>:8080";
+
+    var ws = new WebSocket(host);
+
+    console.log(ws);
+
+    function connectionStatus(msg) {
+      $('#connection').append('<p>' + msg + '</p>');
+    }
+
+    function addMessage(msg) {
+      $('#chat-log').append('<p>' + msg + '</p>');
+    }
+
+    function addChatter(user) {
+      $('#current-chatters').append('<p id=' + user + '>' + user + '</p>');
+      // if username has spaces need to remove white space to allow the id to be added
+    }
+
+    function removeChatter(user) {
+      console.log("this is from inside remove chatter: ");
+      console.log('#'+user);
+      $('#'+user).remove();
+    }
+
+    function connect() {
+
+      try {
+        ws.onmessage = function(evt) {
+          console.log("this is from JS on message: " + evt.data);
+          var data = JSON.parse(evt.data);
+          console.log(data);
+          console.log("this is from JS on message testing condition 1: " + data.event == "new_client");
+          if (data.event == "new_client") {
+            addChatter(data.id)
+          }
+          if (data.event == "message" && data.text != undefined ) {
+          addMessage(data.id + " at " + data.time + " said: " + data.text );
+          }
+          if (data.event == "delete_client") {
+          removeChatter(data.id);
+          }
+        };
+
+        ws.onclose = function() {
+          connectionStatus(ws.readyState);
+        };
+
+        ws.onopen = function() {
+          connectionStatus(ws.readyState);
+        };
+
+      } catch(exception) {
+        addMessage("Error: " + exception);
+      }
+
+    }
+
+    $('#content').hide()
+
+    connect();
+
+    $('#username').submit(function(e){
+      console.log($('#name').val());
+      console.log(JSON.stringify({event:"username", data: {text: $('#name').val()}}));
+      ws.send(JSON.stringify({event:"username", data: {text: $('#name').val()}}));
+      $('#name').val("");
+      $('#content').show()
+      $('#welcome').hide()
+      return false;
+    });
+
+    $('#chat').submit(function(e){
+      console.log($('#message').val());
+      console.log(JSON.stringify({event:"user_message", data: {text: $('#message').val()}}));
+      ws.send(JSON.stringify({event:"user_message", data: {text: $('#message').val()}}));
+      $('#message').val("");
+      return false;
+    });
+
+  });
+
+
+  </script>
+
+  <title></title>
+</head>
+<body>
+  <%= yield %>
+</body>
+</html>
