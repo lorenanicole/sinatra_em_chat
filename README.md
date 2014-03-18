@@ -27,7 +27,9 @@ While Sinatra says he has "ended" his set, you are actually broadcasting.
 
 In your browser input your local network IP address with port 9393 appended:
 
-```192.000.000:9393```
+```
+192.000.000:9393
+```
 
 Invite others on your network chat with you! Again use the network address with port 9393.
 
